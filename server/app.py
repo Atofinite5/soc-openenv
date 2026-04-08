@@ -6,10 +6,21 @@ that follows the openenv-core convention of looking up `server.app:app`
 """
 from __future__ import annotations
 
-from env.main import app, serve
+import os
 
-__all__ = ["app", "serve"]
+import uvicorn
+
+from env.main import app
+
+__all__ = ["app", "main"]
+
+
+def main() -> None:
+    """Entry point used by `[project.scripts]` to launch the server."""
+    host = os.getenv("HOST", "0.0.0.0")
+    port = int(os.getenv("PORT", "7860"))
+    uvicorn.run(app, host=host, port=port)
 
 
 if __name__ == "__main__":
-    serve()
+    main()

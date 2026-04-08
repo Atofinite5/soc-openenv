@@ -23,8 +23,8 @@ dependencies = [
 ]
 
 [project.scripts]
-soc-openenv-server = "server.app:serve"
-serve = "server.app:serve"
+soc-openenv-server = "server.app:main"
+server = "server.app:main"
 
 [project.urls]
 Homepage = "https://huggingface.co/spaces/atofinite/soc-openenv"
