@@ -7,19 +7,23 @@ name = "soc-openenv"
 version = "1.0.0"
 description = "SOC Incident Response OpenEnv environment"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [
     { name = "Bhargav Kalambhe" },
 ]
 keywords = ["openenv", "security", "incident-response", "rl"]
 dependencies = [
-    "fastapi==0.111.0",
-    "uvicorn==0.29.0",
-    "pydantic==2.7.1",
-    "aiohttp==3.9.5",
-    "openai==1.30.1",
+    "openenv-core>=0.2.0",
+    "fastapi>=0.111.0",
+    "uvicorn>=0.29.0",
+    "pydantic>=2.7.1",
+    "aiohttp>=3.9.5",
+    "openai>=1.30.1",
 ]
+
+[project.scripts]
+soc-openenv-server = "env.main:serve"
 
 [project.urls]
 Homepage = "https://huggingface.co/spaces/atofinite/soc-openenv"

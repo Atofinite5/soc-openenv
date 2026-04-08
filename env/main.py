@@ -39,3 +39,17 @@ def state():
         return env.get_state()
     except RuntimeError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+def serve() -> None:
+    """Entry point used by `[project.scripts]` to launch the server."""
+    import os
+    import uvicorn
+
+    host = os.getenv("HOST", "0.0.0.0")
+    port = int(os.getenv("PORT", "7860"))
+    uvicorn.run(app, host=host, port=port)
+
+
+if __name__ == "__main__":
+    serve()
