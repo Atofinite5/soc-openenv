@@ -15,10 +15,13 @@ from client.soc_env import SocActionClient, SocEnv
 
 BENCHMARK = "soc-incident-response"
 
-# Mandatory env vars per OpenEnv hackathon spec
-API_BASE_URL = os.environ.get("API_BASE_URL", "https://router.huggingface.co/v1")
-MODEL_NAME = os.environ.get("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
-API_KEY = os.environ.get("HF_TOKEN") or os.environ.get("API_KEY") or os.environ.get("OPENAI_API_KEY")
+# Mandatory env vars per OpenEnv hackathon spec.
+# Defaults are set only for API_BASE_URL and MODEL_NAME (not HF_TOKEN).
+API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
+MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
+HF_TOKEN = os.getenv("HF_TOKEN")
+# Optional - if you use from_docker_image():
+LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
 
 SUCCESS_THRESHOLD = 0.6
 
@@ -210,19 +213,18 @@ async def run_task(client, env: SocEnv, task_id: str) -> None:
 
 
 async def main() -> None:
-    env_url = os.environ.get("ENV_URL")
-    image_name = os.environ.get("IMAGE_NAME")
+    env_url = os.getenv("ENV_URL")
     if env_url:
         env = SocEnv.from_url(env_url)
-    elif image_name:
-        env = await SocEnv.from_docker_image(image_name)
+    elif LOCAL_IMAGE_NAME:
+        env = await SocEnv.from_docker_image(LOCAL_IMAGE_NAME)
     else:
         env = SocEnv.from_url("http://localhost:7860")
 
     client = None
-    if _OPENAI_AVAILABLE and API_KEY:
+    if _OPENAI_AVAILABLE and HF_TOKEN:
         try:
-            client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
+            client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
         except Exception as e:
             print(f"[DEBUG] OpenAI init failed: {e}", file=sys.stderr)
 
