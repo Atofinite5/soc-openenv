@@ -23,14 +23,15 @@ dependencies = [
 ]
 
 [project.scripts]
-soc-openenv-server = "env.main:serve"
+soc-openenv-server = "server.app:serve"
+serve = "server.app:serve"
 
 [project.urls]
 Homepage = "https://huggingface.co/spaces/atofinite/soc-openenv"
 Repository = "https://github.com/Atofinite5/soc-openenv"
 
 [tool.setuptools]
-packages = ["env", "env.graders", "client"]
+packages = ["env", "env.graders", "client", "server"]
 include-package-data = true
 
 [tool.setuptools.package-data]
