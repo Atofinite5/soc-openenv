@@ -1,0 +1,74 @@
+[
+  {
+    "scenario_id": "t2_001",
+    "alert_text": "ALERT: order-service returning 503 errors. inventory-service timing out. redis-primary high memory.",
+    "services": {
+      "order-service": {
+        "logs": [
+          "2024-03-10 12:00:01 ERROR order: failed to fetch inventory, timeout after 5s",
+          "2024-03-10 12:00:02 ERROR order: returning 503 to client"
+        ],
+        "metrics": {"error_rate": 0.87, "p99_latency_ms": 5000}
+      },
+      "inventory-service": {
+        "logs": [
+          "2024-03-10 11:59:58 ERROR inventory: redis connection refused",
+          "2024-03-10 11:59:59 ERROR inventory: cache miss, falling back to db, slow"
+        ],
+        "metrics": {"error_rate": 0.65, "cache_hit_rate": 0.05}
+      },
+      "redis-primary": {
+        "logs": [
+          "2024-03-10 11:59:55 WARN redis: maxmemory reached, evicting keys",
+          "2024-03-10 11:59:56 ERROR redis: OOM command not allowed when used memory > maxmemory"
+        ],
+        "metrics": {"used_memory_pct": 0.99, "evictions_per_sec": 1500}
+      }
+    },
+    "correct_root_cause_service": "redis-primary",
+    "correct_trigger": "memory_exhaustion",
+    "acceptable_triggers": ["oom", "memory", "maxmemory", "memory_exhaustion", "out of memory", "evict"],
+    "cascade_order": ["redis-primary", "inventory-service", "order-service"],
+    "query_keywords_by_service": {
+      "redis-primary": ["redis", "cache", "memory", "oom", "maxmemory"],
+      "inventory-service": ["inventory", "cache"],
+      "order-service": ["order", "503"]
+    }
+  },
+  {
+    "scenario_id": "t2_002",
+    "alert_text": "ALERT: payment-gateway failing. user-service slow. postgres-main high connections.",
+    "services": {
+      "payment-gateway": {
+        "logs": [
+          "2024-03-10 09:00:01 ERROR payment: cannot get db connection from pool",
+          "2024-03-10 09:00:02 ERROR payment: transaction rollback"
+        ],
+        "metrics": {"error_rate": 0.72, "p99_latency_ms": 8000}
+      },
+      "user-service": {
+        "logs": [
+          "2024-03-10 08:59:55 WARN user: db query took 4200ms",
+          "2024-03-10 08:59:56 ERROR user: connection pool exhausted"
+        ],
+        "metrics": {"error_rate": 0.40, "pool_wait_ms": 4500}
+      },
+      "postgres-main": {
+        "logs": [
+          "2024-03-10 08:59:50 WARN postgres: max_connections (200) reached",
+          "2024-03-10 08:59:51 ERROR postgres: FATAL: too many connections for role"
+        ],
+        "metrics": {"active_connections": 200, "max_connections": 200}
+      }
+    },
+    "correct_root_cause_service": "postgres-main",
+    "correct_trigger": "connection_pool_exhaustion",
+    "acceptable_triggers": ["connection", "max_connections", "pool", "exhaust", "too many connections"],
+    "cascade_order": ["postgres-main", "user-service", "payment-gateway"],
+    "query_keywords_by_service": {
+      "postgres-main": ["postgres", "connection", "max_connections", "pool"],
+      "user-service": ["user", "pool", "db"],
+      "payment-gateway": ["payment", "transaction"]
+    }
+  }
+]

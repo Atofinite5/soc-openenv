@@ -1,0 +1,29 @@
+[
+  {
+    "scenario_id": "t1_001",
+    "alert_text": "ALERT [web-server-01]: CPU usage at 98% for 10 minutes. nginx worker processes spawning rapidly.",
+    "log_snippet": "2024-03-10 14:23:01 ERROR nginx[1234]: worker process 5678 exited on signal 9\n2024-03-10 14:23:02 WARN nginx[1234]: open files limit reached\n2024-03-10 14:23:03 ERROR nginx[1234]: worker_connections not enough",
+    "metrics": {"cpu_percent": 98, "open_files": 1024, "load_avg": 15.2},
+    "correct_severity": "P2",
+    "correct_category": "infra",
+    "query_keywords": ["nginx", "cpu", "worker", "open files", "load"]
+  },
+  {
+    "scenario_id": "t1_002",
+    "alert_text": "ALERT [auth-service]: 450 failed login attempts from single IP 203.0.113.42 in last 2 minutes.",
+    "log_snippet": "2024-03-10 15:01:10 WARN auth: failed login user=admin ip=203.0.113.42\n2024-03-10 15:01:11 WARN auth: failed login user=root ip=203.0.113.42\n2024-03-10 15:01:12 WARN auth: brute force pattern detected",
+    "metrics": {"failed_logins_per_min": 225, "unique_users_targeted": 30},
+    "correct_severity": "P1",
+    "correct_category": "security",
+    "query_keywords": ["auth", "login", "brute", "failed", "ip"]
+  },
+  {
+    "scenario_id": "t1_003",
+    "alert_text": "ALERT [checkout-api]: HTTP 500 error rate at 12% over last 5 minutes.",
+    "log_snippet": "2024-03-10 16:00:01 ERROR checkout: NullPointerException in PaymentProcessor.java:142\n2024-03-10 16:00:02 ERROR checkout: stack trace at com.shop.checkout.process\n2024-03-10 16:00:03 ERROR checkout: failed to commit transaction",
+    "metrics": {"error_rate": 0.12, "request_rate": 800},
+    "correct_severity": "P2",
+    "correct_category": "application",
+    "query_keywords": ["checkout", "error", "exception", "payment", "stack"]
+  }
+]

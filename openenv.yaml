@@ -1,0 +1,64 @@
+name: soc-incident-response
+version: "1.0.0"
+description: >
+  SOC analyst incident response training environment.
+  Agent classifies alerts, diagnoses service cascade failures,
+  and generates ordered remediation plans.
+tags:
+  - openenv
+  - security
+  - incident-response
+  - real-world
+tasks:
+  - id: task_1
+    name: "Incident Classification"
+    difficulty: easy
+    max_steps: 5
+    reward_range: [0.0, 1.0]
+    description: >
+      Classify a security alert by severity (P1-P4) and
+      category (network/application/infra/security).
+  - id: task_2
+    name: "Root Cause Diagnosis"
+    difficulty: medium
+    max_steps: 8
+    reward_range: [0.0, 1.0]
+    description: >
+      Identify the root cause service and trigger type
+      from a multi-service cascade failure.
+  - id: task_3
+    name: "Remediation Planning"
+    difficulty: hard
+    max_steps: 12
+    reward_range: [0.0, 1.0]
+    description: >
+      Generate an ordered remediation plan scored on
+      coverage, ordering, and safety compliance.
+observation_space:
+  type: object
+  properties:
+    task_id:           {type: string}
+    step:              {type: integer}
+    max_steps:         {type: integer}
+    alert_text:        {type: string}
+    log_snippet:       {type: string}
+    metrics:           {type: object, nullable: true}
+    available_actions: {type: array, items: {type: string}}
+    context:           {type: string, nullable: true}
+action_space:
+  type: object
+  required: [action_type]
+  properties:
+    action_type:        {type: string, enum: [classify, query_logs, diagnose, remediate]}
+    severity:           {type: string, enum: [P1, P2, P3, P4], nullable: true}
+    category:           {type: string, enum: [network, application, infra, security], nullable: true}
+    query:              {type: string, nullable: true}
+    service_name:       {type: string, nullable: true}
+    root_cause_service: {type: string, nullable: true}
+    root_cause_trigger: {type: string, nullable: true}
+    remediation_steps:  {type: array, items: {type: string}, nullable: true}
+endpoints:
+  reset: POST /reset
+  step:  POST /step
+  state: GET  /state
+  health: GET /health

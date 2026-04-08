@@ -1,0 +1,32 @@
+[
+  {
+    "scenario_id": "t3_001",
+    "alert_text": "P1 INCIDENT: order-service down. inventory-service failing. redis-primary OOM. Production impact across checkout flow.",
+    "full_context": "Root cause identified: redis-primary hit maxmemory causing evictions and OOM errors. inventory-service depends on redis cache and started falling back to slow db reads. order-service depends on inventory-service and began returning 503s. Customer checkout is broken. You must generate an ordered remediation plan.",
+    "log_snippet": "redis-primary: OOM command not allowed\ninventory-service: cache miss rate 95%\norder-service: 503 error rate 87%",
+    "metrics": {"redis_memory_pct": 0.99, "order_error_rate": 0.87, "checkout_success_rate": 0.05},
+    "required_steps": [
+      "verify_current_state",
+      "notify_stakeholders",
+      "fix_redis_memory",
+      "restart_inventory_service",
+      "verify_order_service_recovery",
+      "document_incident"
+    ],
+    "required_order_constraints": [
+      ["verify_current_state", "fix_redis_memory"],
+      ["fix_redis_memory", "restart_inventory_service"],
+      ["restart_inventory_service", "verify_order_service_recovery"],
+      ["verify_order_service_recovery", "document_incident"]
+    ],
+    "forbidden_before_verify": ["delete", "drop", "flush", "purge", "truncate"],
+    "step_keywords": {
+      "verify_current_state": ["check", "verify", "monitor", "assess", "inspect"],
+      "notify_stakeholders": ["notify", "alert", "page", "escalate", "slack"],
+      "fix_redis_memory": ["redis", "memory", "evict", "maxmemory", "expand"],
+      "restart_inventory_service": ["restart", "inventory", "redeploy"],
+      "verify_order_service_recovery": ["verify", "order", "recovery", "healthy"],
+      "document_incident": ["document", "postmortem", "record", "ticket"]
+    }
+  }
+]
