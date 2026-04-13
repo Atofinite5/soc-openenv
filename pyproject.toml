@@ -23,6 +23,7 @@ dependencies = [
 ]
 
 [project.scripts]
+soc-openenv = "server.app:main"
 soc-openenv-server = "server.app:main"
 server = "server.app:main"
 

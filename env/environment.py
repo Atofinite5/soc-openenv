@@ -139,6 +139,10 @@ class SocEnvironment:
         if self.state.step >= self.state.max_steps:
             done = True
 
+        # Clamp terminal scores to strict (0, 1) — validator rejects 0.0 and 1.0
+        if done:
+            reward = max(0.01, min(0.99, reward))
+
         self.state.cumulative_reward += reward
         self.state.done = done
         self.state.history.append(
